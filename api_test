@@ -1,0 +1,140 @@
+api test : 
+Step 1 — Start the FastAPI server
+
+Make sure your virtual environment is activated, then run:uvicorn app.main:app --reload --port 8000
+You should see something like:Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+
+✅ Step 2 — Open Swagger UI
+
+Go to:👉 http://127.0.0.1:8000/docs
+You should see:
+/register
+/token
+/me
+/admin-only
+If docs load, your API is running correctly.
+
+🔥 Step 3 — Test Register Endpoint (/register)
+Option A: Using Swagger UI
+Open /register
+Click Try it out
+Enter JSON:
+
+{
+  "name": "TestUser",
+  "email": "test@demo.com",
+  "password": "test123",
+  "role": "corporate",
+  "org_name": "TestOrg"
+}
+Click Execute.
+✔ Expected result:
+{
+  "id": 5,
+  "name": "TestUser",
+  "email": "test@demo.com",
+  "role": "corporate",
+  "org_name": "TestOrg"
+}
+
+Option B: Using curl
+curl -X POST "http://127.0.0.1:8000/register" \
+-H "Content-Type: application/json" \
+-d "{\"name\":\"TestUser\",\"email\":\"test@demo.com\",\"password\":\"test123\",\"role\":\"corporate\",\"org_name\":\"TestOrg\"}"
+
+🔐 Step 4 — Test Login Endpoint (/token)
+
+Since /token expects form-data, not JSON, use:
+
+Swagger UI
+
+Go to /token
+
+Click “Try it out”
+
+Enter:
+
+username = test@demo.com
+password = test123
+
+
+Click Execute.
+
+✔ Expected output:
+
+{
+  "access_token": "eyJhbGciOi...",
+  "token_type": "bearer"
+}
+
+
+Copy the access_token.
+
+curl version
+curl -X POST http://127.0.0.1:8000/token \
+-F "username=test@demo.com" \
+-F "password=test123"
+
+🧑‍💼 Step 5 — Test /me Endpoint (Auth Protected)
+Using Swagger UI
+
+Click Authorize at the top right.
+
+Paste:
+
+Bearer <your-token-here>
+
+
+Then go to /me → Try it out → Execute.
+
+✔ Expected response:
+
+{
+  "id": 5,
+  "name": "TestUser",
+  "email": "test@demo.com",
+  "role": "corporate",
+  "org_name": "TestOrg"
+}
+
+Using curl
+curl http://127.0.0.1:8000/me \
+-H "Authorization: Bearer <TOKEN>"
+
+💡 If Something Fails — Troubleshooting Checklist
+❌ 401 Unauthorized on /me
+
+Check:
+
+Did you prefix token with Bearer?
+
+Was token copied completely?
+
+Token expired? Restart and login again.
+
+❌ Incorrect username or password
+
+Confirm user exists in SQLite:
+
+You can try logging in with seeded users:
+
+Seeded users:
+
+Email	Password	Role	Org
+admin@example.com
+	adminpass	admin	ChainBank
+bank@example.com
+	bankpass	bank	ChainBank
+corp@example.com
+	corppass	corporate	AcmeCorp
+audit@example.com
+	auditpass	auditor	AuditHouse
+
+Try:
+
+username = admin@example.com
+password = adminpass
+
+❌ “Email already registered”
+
+Means your /register endpoint works correctly — choose new email.
