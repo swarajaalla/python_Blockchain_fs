@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+sqlmodel
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+pydantic[email]
+bcrypt==4.0.1
+boto3
