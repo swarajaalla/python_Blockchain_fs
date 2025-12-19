@@ -1,0 +1,19 @@
+activate virtual env
+windows cmd  > .venv\Scripts\activate.bat
+powershell >  .venv\Scripts\Activate.ps1
+
+install requirements under backend/ : pip install -r requirements.txt
+
+seed users : python -m app.create_db        
+
+server run : uvicorn app.main:app --reload
+Because:
+Module = app.main
+Object = app
+http://localhost:8000
+
+
+frontend run : no virtual env (bcz frontend runs on java)
+
+frontend run : npm run dev 
+http://localhost:5173/
